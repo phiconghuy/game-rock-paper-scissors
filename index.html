@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Piedra&display=swap" rel="stylesheet">
+	<title>Game Bao Búa Kéo</title>
+	<style>
+		body{
+			width:100%;
+			height:100vh;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+		}
+		.game-screen{
+			width:700px;
+			height:500px;
+			border:1px solid #ccc;
+		}
+		.title{
+			text-align:center;
+			font-size:3rem;
+			font-family: 'Piedra', cursive;
+			color:orange;
+		}
+		.count-seconds{
+			text-align: center;
+   			font-size: 2rem;
+		}
+		.play-area{
+			width:90%;
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			margin:0 auto;
+			font-family: sans-serif;
+		}
+		.play-area .player,.play-area .computer{
+			font-size:2rem;
+			font-weight:bold;
+			padding:0.5rem 1rem;
+		}
+		.play-area .player div{
+			font-size:1rem;
+			margin-top:1.5rem;
+		}
+		.play-area .player div span{
+			margin-top:1rem;
+			display: inline-block;
+			border:1px solid black;
+			padding:.5rem;
+			cursor:pointer;
+		}
+		.play-area .player div span:hover{
+			background-color:lightblue;
+		}
+		.play-area .result{
+			display: flex;
+		}
+		.play-area .result span{
+			font-size:1rem;
+			font-weight:bold;
+			background-color:#ccc;
+			padding:1rem;
+			margin:0 1rem;
+			width:80px;
+			display:inline-block;
+			height:15px;
+		}
+		.score{
+			margin-top:2rem;
+			font-size:1.5rem;
+			text-align: center;
+			font-weight:bold;
+		}
+	</style>
+</head>
+<body>
+	<div class="game-screen">
+		<h3 class="title">Game Bao Búa Kéo</h3>
+		<!-- <button id="start-game">Bắt đầu chơi</button> -->
+		<div class="count-seconds"></div>
+		<div class="play-area">
+			<div class="player" id="player">Player 
+				<div id="select">Chọn</br>
+					<span id="rock" class="select-item">Rock</span>
+					<span id="paper" class="select-item">Paper</span>
+					<span id="scissors" class="select-item">Scissors</span>
+				</div>
+			</div>
+			<div class="result">
+				<span class="player-answer"></span>
+				<span class="computer-answer"></span>
+			</div>
+			<div class="computer" id="computer">Compute
+				r</div>
+		</div>
+		<div class="score">Score<br/><span></span>
+		</div>
+	</div>
+	<script>
+		document.addEventListener('DOMContentLoaded',function(){
+			var player = document.querySelector('.player').getAttribute('id')
+			var computer = document.querySelector('.computer').getAttribute('id')
+			var options = document.querySelectorAll('.select-item')
+			var scoreDisplay = document.querySelector('.score')
+			var selectionComputer = null
+			var selectionPlayer = null
+			
+			function randomSelectionComputer(){
+				var options = new Array('rock','paper','scissors')
+				var randomIndex = Math.floor(Math.random() * options.length)
+				return options[randomIndex]
+			}
+			function getResult(name,select){
+				document.querySelector('.'+name+'-answer').innerText = select
+			}
+
+			// selection player
+			for(let i=0;i<options.length;i++){
+				options[i].onclick = function(){
+					selectionPlayer = this.getAttribute('id')
+					getResult(player,selectionPlayer)
+				}
+			}
+			scoreDisplay.querySelector('span').innerText = `0 - 0`
+
+			var countSeconds = document.querySelector('.count-seconds')
+			var seconds = 10
+
+			var scoreComputer = 0
+			var scorePlayer = 0
+			var timerPlay = setInterval(function(){
+				if(seconds == 0){
+					// selection computer
+					selectionComputer = randomSelectionComputer()
+					isWin()
+					getResult(computer,selectionComputer)
+					seconds = 10
+
+					setTimeout(function(){
+						getResult(player,'')
+						getResult(computer,'')
+					},500)
+				}
+				else{
+					seconds--
+				}
+				countSeconds.innerText = seconds + 's';
+				scoreDisplay.querySelector('span').innerText = `${scorePlayer} - ${scoreComputer}`
+
+				if(scorePlayer == 10 || scoreComputer == 10) endGame()
+			},1000)
+
+			function isWin(){
+				if(selectionPlayer == null){
+					scoreComputer++
+				}
+				else if(selectionPlayer == 'rock' && selectionComputer == 'paper'){
+					scoreComputer++
+				}
+				else if(selectionPlayer == 'paper' && selectionComputer == 'scissors'){
+					scoreComputer++
+				}
+				else if(selectionPlayer == 'scissors' && selectionComputer == 'rock'){
+					scoreComputer++
+				}
+				else if(selectionPlayer == selectionComputer){
+					return
+				}
+				else{
+					scorePlayer++
+				}
+			}
+
+			function endGame(){
+				if(scoreComputer == 10){
+					alert(`Chung cuộc máy thắng với tý số ${scoreComputer} - ${scorePlayer}`)
+				}
+				else{
+					alert(`Chung cuộc người thắng với tý số ${scorePlayer} - ${scoreComputer}`)
+				}
+			}
+		})
+	</script>
+</body>
+</html>
